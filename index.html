@@ -1,0 +1,465 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>ULTRA</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="manifest" href="/manifest.json">
+    <meta name="theme-color" content="#0088cc">
+    <link rel="shortcut icon" href="favicon.ico" type="image/x-icon">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="app-container" id="app-container">
+        <!-- Экран авторизации -->
+        <div class="auth-screen" id="auth-screen">
+            <div class="auth-container">
+                <h1 data-animate>Добро пожаловать</h1>
+                <div class="auth-form" id="login-form">
+                    <div data-animate data-animate-delay="100">
+                        <input type="email" id="login-email" placeholder="Email" autocomplete="username">
+                        <div class="error-message" id="login-email-error"></div>
+                    </div>
+                    <div data-animate data-animate-delay="200">
+                        <input type="password" id="login-password" placeholder="Пароль" autocomplete="current-password">
+                        <div class="error-message" id="login-password-error"></div>
+                    </div>
+                    <button id="login-button" data-animate data-animate-delay="300" class="ripple">Войти</button>
+                    <p class="auth-switch" data-animate data-animate-delay="400">Нет аккаунта? <span id="show-register">Зарегистрироваться</span></p>
+                </div>
+                
+                <div class="auth-form hidden" id="register-form">
+                    <div data-animate data-animate-delay="100">
+                        <input type="text" id="register-firstname" placeholder="Имя" autocomplete="given-name">
+                        <div class="error-message" id="register-firstname-error"></div>
+                    </div>
+                    <div data-animate data-animate-delay="150">
+                        <input type="text" id="register-lastname" placeholder="Фамилия" autocomplete="family-name">
+                        <div class="error-message" id="register-lastname-error"></div>
+                    </div>
+                    <div data-animate data-animate-delay="200">
+                        <input type="email" id="register-email" placeholder="Email" autocomplete="username">
+                        <div class="error-message" id="register-email-error"></div>
+                    </div>
+                    <div data-animate data-animate-delay="250">
+                        <input type="password" id="register-password" placeholder="Пароль" autocomplete="new-password">
+                        <div class="error-message" id="register-password-error"></div>
+                    </div>
+                    <button id="register-button" data-animate data-animate-delay="300" class="ripple">Зарегистрироваться</button>
+                    <p class="auth-switch" data-animate data-animate-delay="350">Уже есть аккаунт? <span id="show-login">Войти</span></p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Основной интерфейс мессенджера -->
+        <div class="messenger-container hidden" id="messenger-container">
+            <!-- Боковая панель -->
+            <div class="sidebar" id="sidebar">
+                <div class="sidebar-header">
+                    <button class="mobile-menu-button" id="mobile-menu-button"><i class="fas fa-bars"></i></button>
+                    <div class="user-avatar" id="user-avatar-sidebar">
+                        <span id="avatar-letter-sidebar"></span>
+                    </div>
+                    <div class="user-info">
+                        <span id="username-sidebar"></span>
+                        <small id="user-status">online</small>
+                    </div>
+                    <button id="settings-button"><i class="fas fa-cog"></i></button>
+                </div>
+                
+                <div class="search-container">
+                    <input type="text" placeholder="Поиск..." id="search-input">
+                    <i class="fas fa-search"></i>
+                </div>
+                
+                <div class="chats-list" id="chats-list">
+                    <!-- Список чатов будет здесь -->
+                </div>
+            </div>
+            
+            <!-- Основная область чата -->
+            <div class="chat-area">
+                <div class="chat-header">
+                    <button class="mobile-menu-button" id="back-button"><i class="fas fa-arrow-left"></i></button>
+                    <div class="chat-partner-info">
+                        <div class="user-avatar small" id="chat-partner-avatar">
+                            <span>G</span>
+                        </div>
+                        <div>
+                            <span class="chat-partner-name">Общий чат</span>
+                            <small id="chat-partner-status">last seen recently</small>
+                        </div>
+                    </div>
+                    <div class="chat-actions">
+                        <button id="voice-call-button"><i class="fas fa-phone"></i></button>
+                        <button id="video-call-button"><i class="fas fa-video"></i></button>
+                        <button id="chat-menu-button"><i class="fas fa-ellipsis-v"></i></button>
+                    </div>
+                </div>
+                
+                <div class="messages-container" id="messages-container">
+                    <!-- Сообщения будут здесь -->
+                    <div id="loading-messages" style="text-align: center; padding: 20px; color: var(--text-secondary);">
+                        Загрузка сообщений...
+                    </div>
+                </div>
+                
+                <div class="message-input-container">
+                    <button class="attachment-button" id="attachment-button"><i class="fas fa-paperclip"></i></button>
+                    <input type="text" placeholder="Введите сообщение..." id="message-input" autocomplete="off">
+                    <button class="emoji-button" id="emoji-button"><i class="far fa-smile"></i></button>
+                    <button id="send-button"><i class="fas fa-paper-plane"></i></button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Модальное окно настроек -->
+        <div class="modal hidden" id="settings-modal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2>Настройки профиля</h2>
+                    <button class="close-modal">&times;</button>
+                </div>
+                
+                <div class="profile-settings">
+                    <div class="avatar-upload">
+                        <div class="user-avatar large" id="user-avatar-settings">
+                            <span id="avatar-letter-settings"></span>
+                        </div>
+                        <div class="avatar-actions">
+                            <button id="upload-avatar" class="ripple">Загрузить фото</button>
+                            <button id="remove-avatar" class="ripple">Удалить фото</button>
+                            <input type="file" id="avatar-input" accept="image/*" style="display: none;">
+                        </div>
+                    </div>
+                    
+                    <div class="profile-form">
+                        <div class="form-group">
+                            <label for="edit-firstname">Имя</label>
+                            <input type="text" id="edit-firstname">
+                            <div class="error-message" id="edit-firstname-error"></div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="edit-lastname">Фамилия</label>
+                            <input type="text" id="edit-lastname">
+                            <div class="error-message" id="edit-lastname-error"></div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="edit-username">Юзернейм</label>
+                            <input type="text" id="edit-username" placeholder="Уникальное имя пользователя">
+                            <div class="error-message" id="edit-username-error"></div>
+                            <div class="username-check hidden" id="username-check">
+                                <i class="fas fa-check-circle"></i>
+                                <span id="username-check-text"></span>
+                            </div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="edit-email">Email</label>
+                            <input type="email" id="edit-email" disabled>
+                        </div>
+                        
+                        <button id="save-profile" class="ripple">Сохранить изменения</button>
+                        <button id="logout-button" class="secondary-button" style="width: 100%; margin-top: 10px;">Выйти из аккаунта</button>
+                        <button id="delete-account-button" class="danger-button" style="width: 100%; margin-top: 10px;">Удалить аккаунт</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+            
+        <div class="chat-menu" id="chat-menu">
+            <div class="chat-menu-item" id="chat-info-button">
+                <i class="fas fa-users"></i>
+                <span>Информация о чате</span>
+            </div>
+            <div class="chat-menu-item" id="chat-search-button">
+                <i class="fas fa-search"></i>
+                <span>Поиск в чате</span>
+            </div>
+            <div class="chat-menu-item" id="chat-notifications-button">
+                <i class="fas fa-bell"></i>
+                <span>Уведомления</span>
+            </div>
+            <div class="chat-menu-item" id="clear-history-button">
+                <!--<i class="fas fa-trash"></i>-->
+                <span>Написать в поддержку</span>
+            </div>
+        </div>
+
+        <!-- Эмодзи-пикер -->
+        <div class="emoji-picker" id="emoji-picker">
+            <div class="emoji-picker-header">
+                <span>Выберите эмодзи</span>
+                <button class="close-emoji-picker">&times;</button>
+            </div>
+            <div class="emoji-categories">
+                <div class="emoji-category active" data-category="smileys">😀</div>
+                <div class="emoji-category" data-category="animals">🐻</div>
+                <div class="emoji-category" data-category="food">🍎</div>
+                <div class="emoji-category" data-category="activities">⚽</div>
+                <div class="emoji-category" data-category="objects">💡</div>
+            </div>
+            <div class="emoji-container" id="emoji-container">
+                <!-- Эмодзи будут добавлены через JavaScript -->
+            </div>
+        </div>
+
+        <!-- Меню вложений -->
+        <div class="attachment-menu" id="attachment-menu">
+            <div class="chat-menu-item" id="attach-photo">
+                <i class="fas fa-camera"></i>
+                <span>Фото или видео</span>
+                <input type="file" id="photo-input" accept="image/*,video/*" style="display: none;" multiple>
+            </div>
+            <div class="chat-menu-item" id="attach-file">
+                <i class="fas fa-file"></i>
+                <span>Файл</span>
+                <input type="file" id="file-input" style="display: none;" multiple>
+            </div>
+            <div class="chat-menu-item" id="attach-location">
+                <i class="fas fa-map-marker-alt"></i>
+                <span>Местоположение</span>
+            </div>
+            <div class="chat-menu-item" id="attach-contact">
+                <i class="fas fa-user"></i>
+                <span>Контакт</span>
+            </div>
+        </div>
+
+        <!-- Уведомления -->
+        <div class="notification hidden" id="notification"></div>
+
+        <!-- Контейнер звонка -->
+        <div class="call-container hidden" id="call-container">
+            <video class="call-video" id="remote-video" autoplay></video>
+            <video class="call-video hidden" id="local-video" autoplay muted></video>
+            
+            <div class="call-info" id="call-info">
+                <h2 id="call-title">Звонок...</h2>
+                <p id="call-status">Установка соединения</p>
+            </div>
+            
+            <div class="call-controls">
+                <div class="call-button call-mute" id="mute-button">
+                    <i class="fas fa-microphone"></i>
+                </div>
+                <div class="call-button call-video-toggle" id="video-toggle">
+                    <i class="fas fa-video"></i>
+                </div>
+                <div class="call-button call-screen-share" id="screen-share">
+                    <i class="fas fa-desktop"></i>
+                </div>
+                <div class="call-button call-end" id="end-call">
+                    <i class="fas fa-phone"></i>
+                </div>
+            </div>
+        </div>
+
+        <!-- Модальное окно информации о чате -->
+        <div class="modal hidden" id="chat-info-modal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2>Информация о чате</h2>
+                    <button class="close-modal">&times;</button>
+                </div>
+                
+                <div class="chat-info-container">
+                    <div class="chat-info-section">
+                        <div class="chat-info-section-title">Участники</div>
+                        <div class="chat-info-members" id="chat-members">
+                            <!-- Участники чата будут здесь -->
+                        </div>
+                    </div>
+                    
+                    <div class="chat-info-section">
+                        <div class="chat-info-section-title">Медиа</div>
+                        <div class="chat-media-grid" id="chat-media">
+                            <!-- Медиафайлы чата будут здесь -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Модальное окно поиска в чате -->
+        <div class="modal hidden" id="chat-search-modal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2>Поиск в чате</h2>
+                    <button class="close-modal">&times;</button>
+                </div>
+                
+                <div class="chat-search-container">
+                    <input type="text" id="chat-search-input" placeholder="Поиск сообщений..." class="search-input">
+                    <div class="chat-search-results" id="chat-search-results">
+                        <!-- Результаты поиска будут здесь -->
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Модальное окно уведомлений чата -->
+        <div class="modal hidden" id="chat-notifications-modal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2>Уведомления</h2>
+                    <button class="close-modal">&times;</button>
+                </div>
+                
+                <div class="chat-notifications-settings">
+                    <div class="notification-option">
+                        <span>Уведомления</span>
+                        <select id="notification-setting">
+                            <option value="all">Все</option>
+                            <option value="mentions">Только упоминания</option>
+                            <option value="none">Отключить</option>
+                        </select>
+                    </div>
+                    
+                    <div class="notification-option">
+                        <span>Звук уведомлений</span>
+                        <select id="notification-sound">
+                            <option value="default">По умолчанию</option>
+                            <option value="none">Без звука</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Модальное окно подтверждения очистки истории -->
+        <div class="modal hidden" id="clear-history-modal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <a href="mailto:anonim.chat.troy.uray@gmail.com">anonim.chat.troy.uray@gmail.com</a>
+                    <!--<h2>Очистить историю</h2>
+                    <button class="close-modal">&times;</button>-->
+                </div>
+                
+                <!--<div class="confirm-clear-history">
+                    <p>Вы уверены, что хотите очистить историю чата? Это действие нельзя отменить.</p>
+                    <div class="confirm-buttons">
+                        <button id="confirm-clear" class="danger-button">Очистить</button>
+                        <button id="cancel-clear" class="secondary-button">Отмена</button>
+                    </div>
+                </div>-->
+            </div>
+        </div>
+
+        <!-- Модальное окно отправки файлов -->
+        <div class="file-upload-modal hidden" id="file-upload-modal">
+            <div class="file-upload-content">
+                <div class="file-upload-title">Отправить файл</div>
+                <div class="file-upload-options">
+                    <div class="file-upload-option" id="upload-photo">
+                        <i class="fas fa-camera"></i>
+                        <span>Фото</span>
+                        <input type="file" id="photo-input-modal" accept="image/*" style="display: none;" multiple>
+                    </div>
+                    <div class="file-upload-option" id="upload-video">
+                        <i class="fas fa-video"></i>
+                        <span>Видео</span>
+                        <input type="file" id="video-input" accept="video/*" style="display: none;" multiple>
+                    </div>
+                    <div class="file-upload-option" id="upload-file">
+                        <i class="fas fa-file"></i>
+                        <span>Файл</span>
+                        <input type="file" id="file-input-modal" style="display: none;" multiple>
+                    </div>
+                    <div class="file-upload-option" id="send-location">
+                        <i class="fas fa-map-marker-alt"></i>
+                        <span>Местоположение</span>
+                    </div>
+                    <div class="file-upload-option" id="send-contact">
+                        <i class="fas fa-user"></i>
+                        <span>Контакт</span>
+                    </div>
+                    <div class="file-upload-option" id="screen-share-option">
+                        <i class="fas fa-desktop"></i>
+                        <span>Демонстрация экрана</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Модальное окно поиска пользователей -->
+        <div class="modal hidden" id="user-search-modal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2>Поиск пользователей</h2>
+                    <button class="close-modal">&times;</button>
+                </div>
+                
+                <div class="user-search-container">
+                    <input type="text" id="user-search-input" placeholder="Введите юзернейм..." class="search-input">
+                    <div class="user-search-results" id="user-search-results">
+                        <!-- Результаты поиска пользователей будут здесь -->
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Меню сообщения -->
+        <div class="message-menu hidden" id="message-menu">
+            <div class="message-menu-item" id="delete-message">
+                <i class="fas fa-trash"></i>
+                <span>Удалить</span>
+            </div>
+            <div class="message-menu-item" id="delete-for-everyone">
+                <i class="fas fa-trash-alt"></i>
+                <span>Удалить у всех</span>
+            </div>
+            <div class="message-menu-item" id="reply-message">
+                <i class="fas fa-reply"></i>
+                <span>Ответить</span>
+            </div>
+            <div class="message-menu-item" id="forward-message">
+                <i class="fas fa-share"></i>
+                <span>Переслать</span>
+            </div>
+        </div>
+
+        <!-- Модальное окно подтверждения удаления аккаунта -->
+        <div class="modal hidden" id="delete-account-modal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2>Удаление аккаунта</h2>
+                    <button class="close-modal">&times;</button>
+                </div>
+                
+                <div class="confirm-delete-account">
+                    <p>Вы уверены, что хотите удалить аккаунт? Все ваши данные будут безвозвратно удалены. Это действие нельзя отменить.</p>
+                    <div class="confirm-buttons">
+                        <button id="confirm-delete" class="danger-button">Удалить</button>
+                        <button id="cancel-delete" class="secondary-button">Отмена</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Переключатель аккаунтов -->
+        <div class="account-switcher">
+            <div class="account-button" id="account-button">
+                <i class="fas fa-user"></i>
+            </div>
+            <div class="accounts-menu" id="accounts-menu">
+                <!-- Аккаунты будут здесь -->
+                <div class="account-add" id="add-account">
+                    <i class="fas fa-plus"></i>
+                    <span>Добавить аккаунт</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Подключаем Firebase -->
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-storage.js"></script>
+    <script src="app.js"></script>
+</body>
+</html>
